@@ -1,0 +1,1063 @@
+# PROJECT MEW — GRANDE EXPANSÃO DE CONTEÚDO E SISTEMAS
+
+Quero uma expansão significativa do Project Mew, utilizando a estrutura, o código, o banco de dados e os componentes que já existem.
+
+**NÃO RECRIE O APLICATIVO DO ZERO. NÃO APAGUE FUNCIONALIDADES EXISTENTES. NÃO SUBSTITUA SISTEMAS QUE JÁ FUNCIONAM SEM NECESSIDADE.**
+
+A Pokédex de Kanto já está completa. Preserve seus 151 registros, suas imagens e suas informações.
+
+Esta atualização possui quatro grandes objetivos:
+
+1. Construir uma biblioteca completa de movimentos Pokémon.
+2. Expandir consideravelmente o catálogo de itens e o inventário.
+3. Integrar essas bibliotecas às fichas, ao combate e à economia.
+4. Criar novas ferramentas que tornem o Project Mew uma plataforma completa de RPG.
+
+Antes de implementar, analise o projeto existente e identifique quais funcionalidades já estão disponíveis, quais precisam ser corrigidas e quais ainda não existem.
+
+Não crie somente interfaces visuais. Implemente banco de dados, operações, relacionamentos e persistência real.
+
+---
+
+# PARTE I — BIBLIOTECA COMPLETA DE MOVIMENTOS POKÉMON
+
+## 1. Catálogo oficial de movimentos
+
+Crie uma biblioteca centralizada com o catálogo mais completo possível de movimentos oficiais Pokémon.
+
+O catálogo deve abranger as gerações I a IX e os conteúdos oficialmente publicados de jogos posteriores, como Pokémon Legends: Z-A, desde que existam dados verificáveis.
+
+A estrutura deve estar preparada para receber novas gerações e jogos futuramente.
+
+Não inclua movimentos de jogos ainda não lançados nem invente movimentos inexistentes.
+
+### Fonte de dados
+
+Utilize a PokéAPI como fonte estruturada principal:
+
+https://pokeapi.co/api/v2/
+
+Consulte os dados de cada movimento e importe as informações disponíveis.
+
+Não faça apenas uma requisição limitada aos primeiros resultados. Percorra a paginação até importar todo o conteúdo disponível.
+
+Utilize outras fontes confiáveis para complementar dados ausentes ou verificar conteúdos recentes.
+
+A importação deve ser executada de maneira idempotente: executá-la novamente não pode duplicar os movimentos existentes.
+
+Armazene os dados no banco de dados do Project Mew. Não dependa de uma consulta externa toda vez que alguém abrir a biblioteca.
+
+### Informações de cada movimento
+
+Cada movimento precisa possuir:
+
+- Nome em português brasileiro, quando disponível.
+- Nome original.
+- Identificador único.
+- Tipo Pokémon.
+- Categoria de dano: físico, especial ou status.
+- Potência original nos jogos.
+- Precisão original.
+- PP original.
+- Prioridade.
+- Alvo.
+- Geração de introdução.
+- Jogos e versões em que aparece.
+- Descrição resumida do efeito.
+- Chance de efeito secundário, quando existente.
+- Alterações de atributos provocadas.
+- Condições que pode causar.
+- Pokémon que podem aprender o movimento.
+- Método de aprendizado.
+- Nível de aprendizado, quando aplicável.
+- Compatibilidade com máquinas e tutores, quando aplicável.
+- Observações e fonte dos dados.
+
+A descrição em português deve ser confiável. Quando uma tradução não estiver disponível, mantenha o nome original e permita que o Mestre cadastre um nome alternativo. Não invente traduções como se fossem oficiais.
+
+Não reproduza extensos textos de descrição dos jogos. Utilize informações mecânicas estruturadas e descrições próprias e resumidas.
+
+### Organização da biblioteca
+
+Crie filtros para:
+
+- Nome.
+- Tipo.
+- Geração.
+- Categoria de dano.
+- Potência.
+- Precisão.
+- Custo de PE no RPG.
+- Alcance.
+- Efeitos.
+- Condições aplicadas.
+- Pokémon que aprendem o movimento.
+- Movimentos adaptados ao sistema.
+- Movimentos aguardando adaptação.
+
+Adicione pesquisa instantânea e ordenação alfabética.
+
+Cada movimento deve abrir uma página ou janela detalhada.
+
+## 2. Adaptação dos movimentos ao Manual de Campo
+
+Existe uma diferença fundamental entre os jogos Pokémon e o sistema de RPG do Project Mew.
+
+**Não confunda os valores originais dos jogos com as regras do RPG.**
+
+Os videogames utilizam potência, precisão e PP. Nosso sistema utiliza dados de potência, PE, testes e efeitos narrativos e mecânicos.
+
+A biblioteca deve armazenar separadamente os dois conjuntos de informações.
+
+### Escala oficial de potência do nosso RPG
+
+| Categoria | Dado de potência | Custo |
+|---|---:|---:|
+| Básico | d4 | 0 PE |
+| Comum | d6 | 1 PE |
+| Forte | d8 | 2 PE |
+| Assinatura | d10 | 3 PE |
+| Supremo | d12 | 4 PE |
+
+Esses valores pertencem ao nosso Manual de Campo 1.0.
+
+### Informações específicas da adaptação
+
+Cada movimento adaptado ao RPG deve possuir:
+
+- Categoria de potência no RPG.
+- Custo em PE.
+- Tipo.
+- Categoria de dano no RPG.
+- Atributo utilizado no teste.
+- Perícia utilizada no teste.
+- Alcance.
+- Número de alvos.
+- Área de efeito.
+- Dano.
+- Efeitos adicionais.
+- Condições provocadas.
+- Duração.
+- Resistência exigida do alvo.
+- Requisitos de utilização.
+- Observações do Mestre.
+
+### Status de adaptação
+
+Cada movimento deve possuir um dos seguintes estados:
+
+- Dados oficiais importados.
+- Aguardando adaptação.
+- Adaptação sugerida.
+- Adaptado pelo Mestre.
+- Aprovado para a campanha.
+- Desativado nesta campanha.
+
+A IA pode sugerir adaptações iniciais com base nos dados oficiais, mas essas sugestões precisam ser identificadas como propostas, nunca como regras oficiais do nosso sistema.
+
+Não transforme automaticamente potência 100 dos videogames em d10, por exemplo.
+
+Não invente custos, testes ou efeitos sem deixar claro que são propostas de balanceamento.
+
+Permita que o Mestre aprove, edite, rejeite e personalize cada adaptação.
+
+## 3. Integração com as fichas Pokémon
+
+Dentro da ficha de cada Pokémon, adicione uma seção chamada **Movimentos**.
+
+O usuário deve poder:
+
+1. Abrir a biblioteca.
+2. Pesquisar um movimento.
+3. Visualizar seus detalhes.
+4. Consultar os dados originais.
+5. Consultar a adaptação para o RPG.
+6. Adicionar o movimento à ficha.
+7. Remover um movimento conhecido.
+8. Substituir um movimento.
+9. Consultar histórico de aprendizado.
+
+Um Pokémon não deve precisar cadastrar manualmente informações que já existem na biblioteca.
+
+Utilize uma referência ao movimento original no banco de dados, preservando uma cópia dos parâmetros adaptados quando necessário.
+
+Respeite o limite de quatro movimentos conhecidos do Manual de Campo.
+
+A biblioteca também precisa permitir que o Mestre crie movimentos exclusivos da campanha.
+
+### Aprendizado
+
+Considere duas informações independentes:
+
+- Aprendizado original nos videogames.
+- Aprendizado no sistema de RPG.
+
+O nível em que um Pokémon aprende um movimento nos videogames deve ser informativo, não uma regra automática para o RPG.
+
+Respeite a progressão de aprendizado definida pelo Manual de Campo e permita que o Mestre registre treinamentos e aprendizados narrativos.
+
+## 4. Categorias especiais de movimentos
+
+Organize adequadamente movimentos de:
+
+- Dano físico.
+- Dano especial.
+- Status.
+- Recuperação.
+- Proteção.
+- Controle de campo.
+- Movimentação.
+- Fortalecimento.
+- Enfraquecimento.
+- Efeitos de clima.
+- Efeitos de terreno.
+- Armadilhas.
+- Contra-ataques.
+- Movimentos de prioridade.
+- Movimentos de área.
+
+Inclua também, quando aplicável ao catálogo e aos jogos de origem:
+
+- Movimentos Z.
+- Max Moves.
+- G-Max Moves.
+- Movimentos exclusivos de formas ou jogos.
+- Variações especiais.
+
+Não misture variantes especiais com movimentos comuns sem identificá-las.
+
+---
+
+# PARTE II — EXPANSÃO DO INVENTÁRIO E DA BIBLIOTECA DE ITENS
+
+## 5. Biblioteca central de itens
+
+Crie um catálogo central de itens Pokémon.
+
+Quero muito mais variedade do que existe atualmente.
+
+A biblioteca deve incluir itens clássicos, itens de exploração, consumíveis, dispositivos de captura, materiais, objetos especiais e itens personalizados.
+
+Sempre separe os efeitos originais dos videogames dos efeitos adaptados para o RPG.
+
+Cada item precisa possuir:
+
+- Nome.
+- Imagem ou ícone.
+- Categoria.
+- Subcategoria.
+- Descrição.
+- Efeito original, quando houver.
+- Efeito adaptado ao RPG.
+- Preço em Pokédólares.
+- Raridade.
+- Disponibilidade.
+- Quantidade empilhável.
+- Peso opcional.
+- Cargas ou usos, quando aplicável.
+- Condições de utilização.
+- Alvos permitidos.
+- Observações do Mestre.
+- Origem do item.
+- Jogos e gerações em que aparece.
+
+### Categorias iniciais
+
+Crie as seguintes categorias:
+
+**1. Dispositivos de captura**
+- Poké Bola.
+- Grande Bola.
+- Ultra Bola.
+- Master Ball.
+- Safari Ball.
+- Net Ball.
+- Dive Ball.
+- Dusk Ball.
+- Quick Ball.
+- Timer Ball.
+- Repeat Ball.
+- Luxury Ball.
+- Premier Ball.
+- Heal Ball.
+- Nest Ball.
+- Lure Ball.
+- Level Ball.
+- Moon Ball.
+- Friend Ball.
+- Love Ball.
+- Fast Ball.
+- Heavy Ball.
+- Dream Ball.
+- Beast Ball.
+- Sport Ball.
+
+Organize também dispositivos especiais e regionais conforme os jogos de origem.
+
+**2. Medicamentos e recuperação**
+- Poção.
+- Superpoção.
+- Hiperpoção.
+- Max Potion.
+- Full Restore.
+- Revive.
+- Max Revive.
+- Fresh Water.
+- Soda Pop.
+- Lemonade.
+- Moomoo Milk.
+- Outros medicamentos oficiais.
+
+**3. Cura de condições**
+- Antídoto.
+- Antiparalisia.
+- Queimadura.
+- Despertador.
+- Gelo medicinal.
+- Remédio Completo.
+- Bagas de cura.
+- Outros itens que removam condições.
+
+**4. Recuperação de energia**
+- Ether.
+- Max Ether.
+- Elixir.
+- Max Elixir.
+- Leppa Berry.
+- Outros itens relacionados à recuperação de recursos.
+
+Os efeitos originais desses objetos não devem ser automaticamente convertidos em PE. A adaptação deve ser configurável pelo Mestre.
+
+**5. Bagas e alimentos**
+Inclua uma biblioteca extensa de berries e alimentos Pokémon.
+
+Exemplos:
+- Oran Berry.
+- Sitrus Berry.
+- Pecha Berry.
+- Cheri Berry.
+- Chesto Berry.
+- Rawst Berry.
+- Aspear Berry.
+- Persim Berry.
+- Lum Berry.
+- Leppa Berry.
+- Aguav Berry.
+- Figy Berry.
+- Wiki Berry.
+- Mago Berry.
+- Iapapa Berry.
+- Razz Berry.
+- Nanab Berry.
+- Pinap Berry.
+
+Permita registrar origem, efeitos e condições de utilização.
+
+**6. Itens de evolução**
+Inclua:
+- Fire Stone.
+- Water Stone.
+- Thunder Stone.
+- Leaf Stone.
+- Moon Stone.
+- Sun Stone.
+- Shiny Stone.
+- Dusk Stone.
+- Dawn Stone.
+- Ice Stone.
+- Metal Coat.
+- King's Rock.
+- Dragon Scale.
+- Up-Grade.
+- Dubious Disc.
+- Razor Claw.
+- Razor Fang.
+- Reaper Cloth.
+- Protector.
+- Electirizer.
+- Magmarizer.
+- Outros itens evolutivos oficiais.
+
+Integre esses itens ao sistema de evolução sem forçar uma evolução automática. O Mestre precisa confirmar os requisitos narrativos e mecânicos.
+
+**7. Itens de batalha**
+Inclua itens de fortalecimento, proteção, precisão, velocidade e outros recursos de combate.
+
+Exemplos:
+- X Attack.
+- X Defense.
+- X Speed.
+- X Accuracy.
+- X Sp. Atk.
+- X Sp. Def.
+- Dire Hit.
+- Guard Spec.
+- Focus Sash.
+- Leftovers.
+- Choice Band.
+- Choice Scarf.
+- Choice Specs.
+- Rocky Helmet.
+- Outros itens de batalha.
+
+Separe itens consumíveis de itens equipáveis.
+
+**8. Itens de exploração**
+Inclua:
+- Corda.
+- Mosquetão.
+- Lanterna.
+- Bastão luminoso.
+- Bússola.
+- Mapa.
+- Cantil.
+- Mochila.
+- Barraca.
+- Kit de campo.
+- Kit de ferramentas.
+- Kit de primeiros socorros.
+- Binóculos.
+- Rádio.
+- Câmera.
+- Caderno de campo.
+- Equipamentos de pesca.
+- Materiais de reparo.
+- Equipamentos de acampamento.
+- Equipamentos para exploração de cavernas.
+- Equipamentos para ambientes aquáticos.
+
+**9. Itens importantes e de missão**
+Crie uma categoria para objetos únicos, documentos, chaves, artefatos, presentes, registros, equipamentos especiais e itens relacionados a missões.
+
+Eles não devem ser vendidos ou consumidos acidentalmente.
+
+**10. Itens personalizados**
+Permita que o Mestre crie qualquer item que não exista na biblioteca oficial.
+
+Itens personalizados devem poder receber nome, imagem, descrição, categoria, efeito, preço e regras próprias.
+
+## 6. Preservar os itens do Manual de Campo
+
+Os itens que já estão definidos no Manual de Campo 1.0 devem ser preservados com seus efeitos e preços.
+
+Não substitua os seguintes valores:
+
+| Item | Preço | Efeito no RPG |
+|---|---:|---|
+| Poké Bola | 200 PD | Captura comum |
+| Grande Bola | 600 PD | Reduz CA de captura em 2 |
+| Ultra Bola | 1.200 PD | Reduz CA de captura em 4 |
+| Poção | 300 PD | Recupera 1d6 + 2 PV |
+| Superpoção | 700 PD | Recupera 2d6 + 4 PV |
+| Hiperpoção | 1.200 PD | Recupera 3d6 + 6 PV |
+| Antídoto | 100 PD | Encerra Envenenado |
+| Antiparalisia | 100 PD | Encerra Paralisado |
+| Queimadura | 100 PD | Encerra Queimado |
+| Despertador | 100 PD | Encerra Sono e determinados efeitos de confusão |
+| Remédio Completo | 600 PD | Encerra uma condição comum |
+| Reviver | 1.500 PD | Levanta Pokémon Nocauteado com 1/4 dos PV máximos, sem resolver lesões graves |
+| Ração Pokémon | 80 PD | Alimentação para viagem curta |
+| Kit de primeiros socorros | 250 PD | Materiais para Medicina e estabilização |
+| Corda e mosquetão | 180 PD | Escalada e resgate |
+| Lanterna | 120 PD | Iluminação portátil |
+| Kit de ferramentas | 350 PD | Ferramentas para Ofício e Tecnologia |
+| Pílula de Força | 500 PD | Efeito temporário conforme o Manual |
+| Bastão luminoso | 40 PD | Iluminação pequena e descartável |
+| Kit de campo | 400 PD | Navegação, abrigo e reparo leve |
+
+Os preços adicionais devem ser configuráveis e identificados como sugestões, não como regras oficiais.
+
+Itens sem adaptação ao RPG devem aparecer como **Aguardando adaptação do Mestre**.
+
+Respeite as regras de economia, cura, consumo e ações do Manual de Campo.
+
+## 7. Inventário funcional
+
+A biblioteca de itens e o inventário são coisas diferentes.
+
+A biblioteca contém os modelos de itens disponíveis. O inventário contém os itens que cada personagem realmente possui.
+
+Crie inventários independentes para:
+
+- Treinadores.
+- Pokémon.
+- NPCs.
+- Equipes.
+- Armazenamento compartilhado da campanha.
+- Lojas.
+- Baús e depósitos.
+
+Cada entrada de inventário precisa controlar:
+
+- Item.
+- Quantidade.
+- Cargas disponíveis.
+- Estado do item.
+- Local de armazenamento.
+- Proprietário.
+- Data de aquisição.
+- Origem da aquisição.
+- Histórico de utilização.
+- Observações.
+
+### Operações
+
+Permita:
+
+- Adicionar itens.
+- Remover itens.
+- Aumentar e diminuir quantidades.
+- Transferir itens.
+- Equipar itens.
+- Desequipar itens.
+- Consumir itens.
+- Registrar itens encontrados.
+- Registrar compras.
+- Registrar vendas.
+- Mover itens entre inventários.
+- Criar itens personalizados.
+- Organizar por categoria.
+- Pesquisar por nome.
+
+Uma transferência não deve duplicar nem apagar o item.
+
+A quantidade deve ser atualizada corretamente nos dois inventários.
+
+O uso de um consumível deve registrar a operação e aplicar o efeito configurado, quando houver uma adaptação aprovada.
+
+---
+
+# PARTE III — ECONOMIA E COMÉRCIO
+
+## 8. Sistema de Pokédólares
+
+Crie uma carteira individual para cada treinador e uma economia para cada campanha.
+
+Permita:
+
+- Consultar saldo.
+- Receber recompensas.
+- Registrar pagamentos.
+- Realizar compras.
+- Realizar vendas.
+- Transferir dinheiro.
+- Consultar histórico de transações.
+- Configurar preços.
+- Configurar impostos ou descontos, caso a campanha utilize.
+
+Crie lojas por cidade e localidade.
+
+Cada loja deve possuir:
+- Nome.
+- Localização.
+- Descrição.
+- Itens disponíveis.
+- Estoque.
+- Preços.
+- Descontos.
+- Horários de funcionamento.
+- Observações.
+
+Uma loja pode ter itens exclusivos.
+
+Não permita saldo negativo sem autorização do Mestre.
+
+As transações devem ser persistentes e auditáveis.
+
+## 9. Mercado e vendedores NPC
+
+Permita associar uma loja a um NPC.
+
+O Mestre pode criar comerciantes com:
+- Nome.
+- Imagem.
+- Personalidade.
+- Localização.
+- Estoque.
+- Preferências.
+- Preços especiais.
+- Informações e segredos.
+
+Isso deve conectar a área de NPCs à economia.
+
+---
+
+# PARTE IV — NOVAS FERRAMENTAS PARA A CAMPANHA
+
+Quero que você aproveite esta atualização para acrescentar recursos que realmente facilitem o trabalho do Mestre.
+
+## 10. Gerenciador de condições
+
+Crie uma biblioteca de condições e efeitos de batalha.
+
+Inclua condições já utilizadas no sistema, como:
+
+- Envenenado.
+- Queimado.
+- Paralisado.
+- Sono.
+- Confuso.
+- Nocauteado.
+- Exaustão.
+- Outras condições previstas no Manual.
+
+Cada condição deve registrar:
+- Descrição.
+- Efeito mecânico.
+- Duração.
+- Forma de encerramento.
+- Resistência possível.
+- Itens que a removem.
+- Observações.
+
+O sistema deve permitir aplicar e remover condições das fichas Pokémon e dos treinadores.
+
+Integre as condições ao combate.
+
+Não invente efeitos incompatíveis com o Manual de Campo. Condições adicionais devem ser personalizáveis e identificadas como homebrew.
+
+## 11. Construtor de encontros
+
+Crie uma ferramenta para o Mestre montar encontros de exploração.
+
+Permita configurar:
+- Região.
+- Rota.
+- Habitat.
+- Bioma.
+- Horário.
+- Clima.
+- Estação.
+- Pokémon disponíveis.
+- Raridade.
+- Probabilidade de encontro.
+- Quantidade possível.
+- Comportamento.
+- Condições ambientais.
+- Observações secretas.
+
+Adicione tabelas de encontros aleatórios configuráveis pelo Mestre.
+
+O Mestre deve poder realizar rolagens privadas e consultar o resultado sem revelar automaticamente as informações aos jogadores.
+
+A rolagem não deve obrigar um combate. O comportamento de cada Pokémon precisa ser configurável.
+
+## 12. Diário de Pokémon
+
+Cada Pokémon deve possuir um histórico individual.
+
+Registre:
+- Data de captura.
+- Local de captura.
+- Treinador original.
+- Treinadores anteriores.
+- Evoluções.
+- Novos movimentos.
+- Treinamentos.
+- Batalhas importantes.
+- Ferimentos relevantes.
+- Eventos narrativos.
+- Mudanças de temperamento.
+- Observações do Mestre.
+
+O diário deve ser editável e acompanhar o Pokémon mesmo quando ele for transferido para outro treinador.
+
+## 13. Pokédex da campanha
+
+Não altere a Pokédex existente.
+
+Acrescente uma camada de acompanhamento por campanha:
+
+- Pokémon conhecidos.
+- Pokémon avistados.
+- Pokémon capturados.
+- Pokémon atualmente pertencentes à equipe.
+- Pokémon registrados por outros treinadores.
+- Pokémon desconhecidos.
+- Observações e descobertas.
+
+Permita que o Mestre personalize quais informações os jogadores podem visualizar.
+
+A Pokédex global continua contendo as informações completas das espécies, enquanto a Pokédex de campanha representa o conhecimento obtido durante a aventura.
+
+## 14. Gerenciador de Ginásios e competição
+
+Crie uma área para acompanhar a trajetória competitiva.
+
+Inclua:
+- Ginásios.
+- Líderes.
+- Especialidades.
+- Insígnias.
+- Desafios.
+- Requisitos de entrada.
+- Regras de batalha.
+- Histórico de confrontos.
+- Vitórias e derrotas.
+- Classificação.
+- Resultados oficiais.
+- Consequências.
+- Torneios.
+
+Permita que cada Ginásio tenha uma ficha própria e uma equipe de Pokémon do líder.
+
+Não crie resultados automaticamente. O Mestre registra ou confirma cada resultado.
+
+## 15. Sistema de missões e objetivos
+
+Crie um gerenciador de missões.
+
+Cada missão pode possuir:
+- Título.
+- Descrição.
+- Objetivos.
+- NPCs envolvidos.
+- Locais.
+- Recompensas.
+- Requisitos.
+- Prazo.
+- Estado.
+- Segredos.
+- Consequências.
+- Observações do Mestre.
+
+Estados possíveis:
+- Disponível.
+- Em andamento.
+- Concluída.
+- Falhou.
+- Abandonada.
+- Oculta.
+
+Permita objetivos opcionais e diferentes soluções.
+
+## 16. Atlas de Kanto e locais
+
+Crie uma área para registrar locais da campanha:
+
+- Cidades.
+- Rotas.
+- Florestas.
+- Cavernas.
+- Centros Pokémon.
+- Lojas.
+- Ginásios.
+- Laboratórios.
+- Lugares secretos.
+- Áreas especiais.
+
+Cada local pode ter:
+- Nome.
+- Imagem.
+- Descrição.
+- Região.
+- Conexões com outros locais.
+- NPCs presentes.
+- Pokémon encontrados.
+- Itens disponíveis.
+- Eventos.
+- Anotações privadas do Mestre.
+
+Crie uma navegação por regiões e rotas.
+
+O Mestre deve poder adicionar locais personalizados e organizar as conexões entre eles.
+
+## 17. Biblioteca de recursos do Mestre
+
+Crie um espaço centralizado para guardar:
+
+- Regras adicionais.
+- Habilidades personalizadas.
+- Movimentos exclusivos.
+- Itens especiais.
+- Tabelas aleatórias.
+- Encontros.
+- Descrições.
+- Documentos.
+- Imagens.
+- Mapas.
+- Anotações.
+- Referências narrativas.
+
+Organize tudo por campanha e categoria.
+
+---
+
+# PARTE V — CONEXÃO ENTRE SISTEMAS
+
+## 18. Tudo precisa conversar entre si
+
+O mais importante desta atualização é evitar que cada sistema funcione isoladamente.
+
+Implemente as seguintes integrações:
+
+**Movimentos e fichas Pokémon**
+- Um movimento da biblioteca pode ser adicionado à ficha.
+- Alterações de movimentos são salvas.
+- O combate consulta os movimentos conhecidos.
+- O sistema verifica custos e requisitos.
+
+**Itens e inventários**
+- A biblioteca fornece o item.
+- O inventário controla a quantidade.
+- O uso consome a quantidade correta.
+- Efeitos aprovados são aplicados.
+- O histórico registra a utilização.
+
+**Itens e evolução**
+- Itens evolutivos podem ser associados aos requisitos de espécies.
+- O Mestre confirma a evolução.
+- O histórico registra o evento.
+
+**Pokédex e diário**
+- Capturar um Pokémon atualiza o registro da campanha.
+- Evoluções atualizam o histórico.
+- Transferências mantêm o histórico individual.
+
+**NPCs e economia**
+- NPCs podem possuir inventários.
+- NPCs podem administrar lojas.
+- Transações são registradas.
+
+**Sessões e missões**
+- Uma sessão pode registrar missões concluídas.
+- Recompensas podem ser associadas a personagens.
+- O histórico da campanha registra acontecimentos.
+
+**Combate e condições**
+- Movimentos podem aplicar efeitos.
+- Itens podem remover condições quando permitido.
+- Condições permanecem registradas até seu encerramento.
+- O histórico de combate registra as ações relevantes.
+
+---
+
+# PARTE VI — EXPERIÊNCIA VISUAL E ORGANIZAÇÃO
+
+## 19. Evitar poluição visual
+
+A expansão não pode transformar o Project Mew em uma coleção de páginas intermináveis.
+
+Organize a navegação em áreas independentes.
+
+Dentro da campanha, sugiro:
+
+- Visão geral.
+- Treinadores.
+- Pokémon.
+- Pokédex.
+- Movimentos.
+- Inventários.
+- Economia.
+- Encontros.
+- NPCs.
+- Sessões.
+- Missões.
+- Locais.
+- Ginásios.
+- Ferramentas do Mestre.
+
+Utilize menus laterais, abas, filtros e janelas de detalhes.
+
+Não mostre todas as informações de uma vez.
+
+As bibliotecas devem utilizar:
+- Pesquisa.
+- Filtros.
+- Ordenação.
+- Paginação ou carregamento progressivo.
+- Categorias expansíveis.
+- Detalhes sob demanda.
+
+Não carregue milhares de registros simultaneamente na interface.
+
+Priorize desempenho, legibilidade e facilidade de navegação.
+
+---
+
+# PARTE VII — BANCO DE DADOS E INTEGRIDADE
+
+## 20. Estrutura de dados
+
+Antes de implementar, verifique a arquitetura existente.
+
+Crie ou ajuste as tabelas e relacionamentos necessários para:
+
+- Movimentos oficiais.
+- Adaptações de movimentos.
+- Movimentos personalizados.
+- Aprendizado por espécie.
+- Itens oficiais.
+- Itens personalizados.
+- Inventários.
+- Entradas de inventário.
+- Transações.
+- Lojas.
+- Condições.
+- Efeitos ativos.
+- Encontros.
+- Tabelas de encontros.
+- Registros de captura.
+- Histórico de Pokémon.
+- Missões.
+- Objetivos.
+- Locais.
+- Ginásios.
+- Bibliotecas e anexos.
+
+Utilize identificadores únicos e relações consistentes.
+
+Não duplique informações oficiais desnecessariamente.
+
+As configurações específicas de uma campanha não devem modificar a biblioteca global.
+
+Se um Mestre personalizar o efeito de uma Poção em sua campanha, isso não pode alterar o efeito original do item para todos os usuários.
+
+Mantenha separadas as informações globais, as adaptações do sistema e as personalizações das campanhas.
+
+## 21. Persistência e salvamento
+
+Tudo deve continuar salvo após:
+- Atualizar a página.
+- Sair da campanha.
+- Sair da conta.
+- Fechar o navegador.
+- Entrar novamente.
+
+Implemente salvamento confiável, estados de salvamento visíveis e tratamento de erros.
+
+Não mostre uma operação como concluída antes da confirmação do banco de dados.
+
+Evite duplicações e perda de dados durante operações simultâneas.
+
+Implemente cópia de segurança e exportação dos dados das campanhas.
+
+---
+
+# PARTE VIII — TESTES OBRIGATÓRIOS
+
+Antes de concluir, realize testes reais.
+
+### Teste 1 — Biblioteca de movimentos
+- Pesquisar Arranhão.
+- Pesquisar movimentos por tipo.
+- Pesquisar movimentos por geração.
+- Abrir detalhes.
+- Consultar Pokémon que aprendem o movimento.
+- Criar movimento personalizado.
+- Editar e excluir movimento próprio.
+
+### Teste 2 — Adaptação ao RPG
+- Abrir um movimento oficial.
+- Conferir seus dados originais.
+- Criar uma adaptação.
+- Definir dado de potência e custo de PE.
+- Aprovar a adaptação.
+- Adicioná-la a uma ficha Pokémon.
+
+### Teste 3 — Inventário
+- Criar um treinador.
+- Adicionar 5 Poké Bolas.
+- Adicionar 3 Poções.
+- Utilizar uma Poção.
+- Conferir a quantidade restante.
+- Atualizar a página.
+- Verificar se tudo continua salvo.
+
+### Teste 4 — Transferência
+- Criar dois treinadores.
+- Adicionar itens aos dois inventários.
+- Transferir um item.
+- Conferir as quantidades.
+- Verificar se não ocorreram duplicações.
+
+### Teste 5 — Economia
+- Criar uma loja.
+- Cadastrar itens.
+- Definir preços.
+- Realizar uma compra.
+- Conferir o saldo.
+- Conferir o inventário.
+- Consultar o histórico de transações.
+
+### Teste 6 — Integração
+- Capturar um Pokémon de teste.
+- Registrar na Pokédex da campanha.
+- Adicionar um movimento.
+- Adicionar um item.
+- Utilizar o movimento em um combate.
+- Registrar uma condição.
+- Utilizar um item compatível.
+- Verificar se os efeitos foram registrados corretamente.
+
+### Teste 7 — Persistência completa
+- Criar dados em todas as áreas.
+- Atualizar a página.
+- Sair da conta.
+- Entrar novamente.
+- Conferir todas as informações e relações.
+
+### Teste 8 — Permissões
+- Verificar o acesso do jogador.
+- Verificar o acesso do Mestre.
+- Garantir que anotações privadas e segredos não sejam exibidos aos jogadores.
+- Garantir que uma campanha não acesse dados privados de outra.
+
+Não considere uma funcionalidade concluída apenas porque sua página aparece.
+
+---
+
+# ORDEM DE IMPLEMENTAÇÃO
+
+Execute o trabalho nesta ordem:
+
+**FASE 1 — Catálogo**
+1. Importar movimentos oficiais.
+2. Importar itens oficiais.
+3. Implementar pesquisa e filtros.
+4. Verificar integridade e duplicações.
+
+**FASE 2 — Adaptação**
+1. Implementar adaptações de movimentos.
+2. Implementar itens adaptados ao RPG.
+3. Permitir aprovação do Mestre.
+4. Integrar às regras do Manual de Campo.
+
+**FASE 3 — Operações**
+1. Integrar biblioteca às fichas.
+2. Implementar inventários.
+3. Implementar consumo e transferência.
+4. Implementar lojas e economia.
+
+**FASE 4 — Ferramentas**
+1. Gerenciador de condições.
+2. Construtor de encontros.
+3. Diário de Pokémon.
+4. Pokédex de campanha.
+5. Ginásios e missões.
+6. Atlas e biblioteca do Mestre.
+
+**FASE 5 — Qualidade**
+1. Revisar a interface.
+2. Testar persistência.
+3. Testar permissões.
+4. Testar integrações.
+5. Corrigir erros.
+
+Se uma funcionalidade já existir, aprimore-a em vez de duplicá-la.
+
+Não remova dados existentes. Faça alterações no banco de dados de maneira segura e compatível com os registros atuais.
+
+# OBJETIVO FINAL
+
+Quero que o Project Mew seja uma plataforma completa de RPG Pokémon, capaz de administrar campanhas inteiras sem depender de planilhas externas para suas funções principais.
+
+Quero uma biblioteca enorme, mas organizada. Quero fichas flexíveis, mas conectadas às regras. Quero itens variados, mas realmente utilizáveis. Quero ferramentas para o Mestre, mas sem tirar sua liberdade narrativa.
+
+O sistema deve ajudar o Mestre a preparar e conduzir a campanha, não decidir por ele.
+
+**O Project Mew deve conectar o mundo Pokémon, as fichas, os movimentos, os itens, as batalhas e a história em uma única plataforma.**
+
+Priorize funcionamento real, persistência e integridade dos dados acima de elementos decorativos.
+
+Implemente a expansão sobre o projeto existente e finalize com um relatório informando o que foi efetivamente implementado, o que foi testado e o que ainda precisa de atenção.

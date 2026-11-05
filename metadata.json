@@ -1,0 +1,7 @@
+{
+  "name": "Project Mew — Plataforma de RPG Pokémon",
+  "description": "Plataforma profissional de organização e mesa para RPG Pokémon baseada no sistema Além da Próxima Rota.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
